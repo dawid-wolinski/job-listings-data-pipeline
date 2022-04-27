@@ -1,0 +1,57 @@
+s3:
+  access_key: 'AWS_ACCESS_KEY_ID'
+  secret_key: 'AWS_SECRET_ACCESS_KEY'
+  endpoint_url: 'https://s3.amazonaws.com'
+  bucket_name: 'job-listing-salaries'
+  dwh_tables_target_path: 'pracuj-pl/data-warehouse/'
+  target_format: 'parquet'
+
+redshift:
+  host: 'job-salaries-dwh.cbicpnbnsvck.eu-central-1.redshift.amazonaws.com'
+  port: 'PORT'
+  database: 'DATABASE'
+  user: 'USER'
+  password: 'PASSWORD'
+
+data_warehouse:
+  fact_table_name: 'fact_salary'
+  fact_table_key: 'salary_key'
+  one_to_many_template: ['dim_table', 'natural_key', 'surrogate_key']
+  one_to_many_dims: [
+    ['dim_contract', 'contract_type', 'contract_key'],
+    ['dim_offer', 'offer_id', 'offer_key'],
+    ['dim_date', 'published_date', 'date_key'],
+    ['dim_employer', 'employer_tax_id', 'employer_key'],
+    ['dim_position_type', 'position_type', 'position_type_key']]
+
+  many_to_many_template: ['dim_table', 'br_table', 'natural_key', 'surrogate_key', 'group_key']
+  many_to_many_dims: [
+    ['dim_location', 'br_location', 'location', 'location_key', 'location_group_key'],
+    ['dim_category', 'br_category', 'category_id', 'category_key', 'category_group_key']]
+
+transformer:
+  s3_transformer_different_column_names: {}
+  transformer_dwh_different_column_names: {}
+
+meta:
+  metafile_key: 'pracuj-pl/metafiles/transformer_metafile.csv'
+  data_files_source_path: 'pracuj-pl/data/pracuj_daily_data'
+
+logging:
+  version: 1
+  formatters:
+    transforming:
+      format: "Transformer - %(asctime)s - %(levelname)s - %(message)s"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: transforming
+      level: DEBUG
+    file:
+      class: logging.handlers.RotatingFileHandler
+      formatter: transforming
+      filename: './logging/transforming_logs.log'
+      level: INFO
+  root:
+    level: DEBUG
+    handlers: [console, file]

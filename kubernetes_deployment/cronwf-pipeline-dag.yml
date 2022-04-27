@@ -1,0 +1,96 @@
+apiVersion: argoproj.io/v1alpha1
+kind: CronWorkflow
+metadata:
+  name: cronwf-pipeline
+  namespace: argo
+spec:
+  schedule: "0 4 * * *"
+  concurrencyPolicy: "Forbid"
+  startingDeadlineSeconds: 70
+  workflowSpec:
+    entrypoint: dag-template
+    serviceAccountName: argo
+    volumes:
+    - name: config
+      projected:
+        sources:
+        - configMap:
+            name: web-scraping-config
+        - configMap:
+            name: data-transforming-config
+    templates:
+    - name: dag-template
+      dag:
+        tasks:
+        - name: scrape-job-offers
+          template: scrape-template
+        - name: transform-data
+          template: transform-template
+          dependencies:
+          - scrape-job-offers
+
+    - name: scrape-template
+      script:
+        image: dawidwolinski97/job-web-scraping-tool:1.0
+        imagePullPolicy: Always
+        command: [bash]
+        source: |
+          python /code/main.py /code/configs/web-scraping-config
+        volumeMounts:
+        - name: config
+          mountPath: /code/configs
+          readOnly: true
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: scraping-secrets
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: scraping-secrets
+              key: AWS_SECRET_ACCESS_KEY
+
+    - name: transform-template
+      script:
+        image: dawidwolinski97/data-transforming-tool:1.0
+        imagePullPolicy: Always
+        command: [bash]
+        source: |
+          python /code/main.py /code/configs/data-transforming-config
+        volumeMounts:
+        - name: config
+          mountPath: /code/configs
+          readOnly: true
+        env:
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: data-transforming-secrets
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: data-transforming-secrets
+              key: AWS_SECRET_ACCESS_KEY
+        - name: PORT
+          valueFrom:
+            secretKeyRef:
+              name: data-transforming-secrets
+              key: PORT
+        - name: DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: data-transforming-secrets
+              key: DATABASE
+        - name: USER
+          valueFrom:
+            secretKeyRef:
+              name: data-transforming-secrets
+              key: USER
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: data-transforming-secrets
+              key: PASSWORD

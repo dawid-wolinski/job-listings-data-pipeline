@@ -1,0 +1,4 @@
+# git update-index --assume-unchanged logging/transforming_logs.log
+__pycache__
+venv/
+.env

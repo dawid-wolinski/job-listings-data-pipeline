@@ -1,0 +1,43 @@
+s3:
+  access_key: 'AWS_ACCESS_KEY_ID'
+  secret_key: 'AWS_SECRET_ACCESS_KEY'
+  endpoint_url: 'https://s3.amazonaws.com'
+  bucket_name: 'job-listing-salaries'
+  target_path: 'pracuj-pl/data/'
+
+scraper:
+  # Remove or change webdriver_path to '' if running from docker container
+  webdriver_path: './webdrivers/chromedriver' 
+  source_link: 'https://www.pracuj.pl/praca?sal=1'
+  start_date: '2022-04-24'
+  sleep_multiplier: 2
+  column_headers: [
+        'contract_type', 'min_salary', 'max_salary', 'salary_type', 'offer_id', 'offer_link',
+        'published_date', 'position_title', 'location', 'work_schedule', 'work_mode', 'position_type', 
+        'category_id', 'employer_name','employer_address', 'employer_tax_id']
+  month_names: { 
+        'sty': 1, 'lut': 2, 'mar': 3, 'kwi': 4, 'maj': 5, 'cze': 6, 
+        'lip': 7, 'sie': 8, 'wrz': 9, 'paź': 10, 'lis': 11, 'gru': 12 }
+
+meta:
+  metafile_key: 'pracuj-pl/metafiles/scraper_metafile.csv'
+
+
+logging:
+  version: 1
+  formatters:
+    scraping:
+      format: "Scraper - %(asctime)s - %(levelname)s - %(message)s"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      formatter: scraping
+      level: DEBUG
+    file:
+      class: logging.handlers.RotatingFileHandler
+      formatter: scraping
+      filename: './logging/scraping_logs.log'
+      level: INFO
+  root:
+    level: DEBUG
+    handlers: [console, file]

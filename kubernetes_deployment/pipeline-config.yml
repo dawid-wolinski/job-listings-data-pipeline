@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: web-scraping-config
+  namespace: argo
+data:
+  web-scraping-config.yml: |
+    s3:
+      access_key: 'AWS_ACCESS_KEY_ID'
+      secret_key: 'AWS_SECRET_ACCESS_KEY'
+      endpoint_url: 'https://s3.amazonaws.com'
+      bucket_name: 'job-listing-salaries'
+      target_path: 'pracuj-pl/data/'
+
+    scraper:
+      webdriver_path: ''
+      source_link: 'https://www.pracuj.pl/praca?sal=1'
+      start_date: '2022-04-26'
+      sleep_multiplier: 2
+      column_headers: [
+            'contract_type', 'min_salary', 'max_salary', 'salary_type', 'offer_id', 'offer_link',
+            'published_date', 'position_title', 'location', 'work_schedule', 'work_mode', 'position_type', 
+            'category_id', 'employer_name','employer_address', 'employer_tax_id']
+      month_names: { 
+            'sty': 1, 'lut': 2, 'mar': 3, 'kwi': 4, 'maj': 5, 'cze': 6, 
+            'lip': 7, 'sie': 8, 'wrz': 9, 'paź': 10, 'lis': 11, 'gru': 12 }
+
+    meta:
+      metafile_key: 'pracuj-pl/metafiles/scraper_metafile.csv'
+
+    logging:
+      version: 1
+      formatters:
+        scraping:
+          format: "Scraper - %(asctime)s - %(levelname)s - %(message)s"
+      handlers:
+        console:
+          class: logging.StreamHandler
+          formatter: scraping
+          level: DEBUG
+      root:
+        level: DEBUG
+        handlers: [console]
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-transforming-config
+  namespace: argo
+data:
+  data-transforming-config.yml: |
+    s3:
+      access_key: 'AWS_ACCESS_KEY_ID'
+      secret_key: 'AWS_SECRET_ACCESS_KEY'
+      endpoint_url: 'https://s3.amazonaws.com'
+      bucket_name: 'job-listing-salaries'
+      dwh_tables_target_path: 'pracuj-pl/data-warehouse/'
+      target_format: 'parquet'
+
+    redshift:
+      host: 'job-salaries-dwh.cbicpnbnsvck.eu-central-1.redshift.amazonaws.com'
+      port: 'PORT'
+      database: 'DATABASE'
+      user: 'USER'
+      password: 'PASSWORD'
+
+    data_warehouse:
+      fact_table_name: 'fact_salary'
+      fact_table_key: 'salary_key'
+      one_to_many_template: ['dim_table', 'natural_key', 'surrogate_key']
+      one_to_many_dims: [
+        ['dim_contract', 'contract_type', 'contract_key'],
+        ['dim_offer', 'offer_id', 'offer_key'],
+        ['dim_date', 'published_date', 'date_key'],
+        ['dim_employer', 'employer_tax_id', 'employer_key'],
+        ['dim_position_type', 'position_type', 'position_type_key']]
+
+      many_to_many_template: ['dim_table', 'br_table', 'natural_key', 'surrogate_key', 'group_key']
+      many_to_many_dims: [
+        ['dim_location', 'br_location', 'location', 'location_key', 'location_group_key'],
+        ['dim_category', 'br_category', 'category_id', 'category_key', 'category_group_key']]
+
+    transformer:
+      s3_transformer_different_column_names: {}
+      transformer_dwh_different_column_names: {}
+
+    meta:
+      metafile_key: 'pracuj-pl/metafiles/transformer_metafile.csv'
+      data_files_source_path: 'pracuj-pl/data/pracuj_daily_data'
+
+    logging:
+      version: 1
+      formatters:
+        transforming:
+          format: "Transformer - %(asctime)s - %(levelname)s - %(message)s"
+      handlers:
+        console:
+          class: logging.StreamHandler
+          formatter: transforming
+          level: DEBUG
+      root:
+        level: DEBUG
+        handlers: [console]
