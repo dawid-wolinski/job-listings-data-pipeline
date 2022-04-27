@@ -1,4 +1,4 @@
-### Job Listings to Data Warehouse Pipeline
+#### Job Listings to Data Warehouse Pipeline
 
 This pipeline extracts data from Polish job listings website https://www.pracuj.pl/, transforms and loads it into the data warehouse. 
 It consists of two scripts: the web scraping tool and transformation tool.
