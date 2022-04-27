@@ -1,3 +1,4 @@
+# git update-index --assume-unchanged logging/scraping_logs.log
 __pycache__
 venv/
 .env
