@@ -15,7 +15,7 @@ Once new file appears in the S3 Bucket, the data is transformed using Pandas lib
 
 ### Orchestration
 The pipeline is managed using Argo Workflows which is a Kubernetes orchestration enginge allowing to schedule containerised applications. Both, the Web Scraping and Data Transforming are run in the form of separate Docker containers which are built by Kubernetes based on their Docker images. The workflow is scheduled to run everyday at 4:00 a.m. UTC. It starts with the Web Scraping job and once it is finished, the Data Transformation is executed. 
-Kubernetes is hosted on t3.micro EKS Cluster (or was until I found out it's not part of the AWS Free Tier services). 
+Kubernetes is hosted on t3.micro Amazon EKS Cluster (or was until I found out it's not part of the AWS Free Tier services). 
 
 ### Data Warehouse Model
 ![job-salaries](https://user-images.githubusercontent.com/45266505/165736559-1a3e4948-c8ff-47f2-a8bf-4d9005aca3f5.png)
