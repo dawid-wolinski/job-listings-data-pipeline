@@ -18,4 +18,4 @@ The pipeline is managed using Argo Workflows which is a Kubernetes orchestration
 Kubernetes is hosted on t3.micro EKS Cluster (or was until I found out it's not part of the AWS Free Tier Account). 
 
 ## Data Warehouse Model
-![job-salaries-2](https://user-images.githubusercontent.com/45266505/165736454-44ed0d9f-2c61-4ba0-a2c0-d7220a1956e9.png)
+![job-salaries](https://user-images.githubusercontent.com/45266505/165736559-1a3e4948-c8ff-47f2-a8bf-4d9005aca3f5.png)
