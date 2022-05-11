@@ -38,6 +38,8 @@ class Transformer():
         df[df_obj.columns] = df_obj.apply(lambda x: x.str.strip())
         # Offers which do not include full-time employment are removed. None work_schedule is considered to be full-time
         df = df[df['work_schedule'].isnull() | df['work_schedule'].str.contains('pełny etat')].copy()
+        # Remove offers with no category_id
+        df.dropna(subset=['category_id'], inplace=True)
         
         df = self.transform_date(df)
         df = self.transform_employer(df)
