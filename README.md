@@ -14,7 +14,10 @@ It is configured to look for job listings based on the day they were published b
 Once new file appears in the S3 Bucket, the data is transformed using Pandas library and then split into facts and dimensions. The facts in this case are salaries offered by the employers. Each new dimension and fact is assigned with its unique surrogate key. Finally the new data is loaded into AWS Redshift which serves as a Data Warehouse. Names of files from which data was transformed and loaded to DWH are written into the metafile. 
 
 ### Orchestration
-The pipeline is managed using Argo Workflows which is a Kubernetes orchestration enginge allowing to schedule containerised applications. Both, the Web Scraping and Data Transforming are run in the form of separate Docker containers which are built by Kubernetes based on their Docker images. The workflow is scheduled to run everyday at 4:00 a.m. UTC. It starts with the Web Scraping job and once it is finished, the Data Transformation is executed. 
+The pipeline is managed using Argo Workflows which is a Kubernetes orchestration enginge allowing to schedule containerised applications. For this purpose Docker images of both tools (Web Scraping and Data Transforming) were created. The Kubernetes deployment file specifies DAG (Directed Acyclic Graph) with two tasks - each responsible for pulling specific Docker image and running one of the tools within a container.
+![image](https://user-images.githubusercontent.com/45266505/168034296-72e0a9c7-cbb4-46e1-80c0-8ef7325b8bdd.png)
+
+The DAG is scheduled to run everyday at 4:00 a.m. UTC. It starts with the Web Scraping task and once it is finished, the Data Transformation task is executed. 
 Kubernetes is hosted on t3.micro Amazon EKS Cluster (or was until I found out it's not part of the AWS Free Tier services). 
 
 ### Data Warehouse Model
