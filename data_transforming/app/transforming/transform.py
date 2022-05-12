@@ -6,9 +6,9 @@ from ..common.custom_exceptions import WrongDataFileException
 
 
 class Transformer():
-    def __init__(self, bucket: S3BucketConnector, files_to_transform: str, 
-                s3_transformer_different_column_names: str, 
-                transformer_dwh_different_column_names: str) -> None:
+    def __init__(self, bucket: S3BucketConnector, files_to_transform: list, 
+                s3_transformer_different_column_names: dict, 
+                transformer_dwh_different_column_names: dict) -> None:
         self.logger = logging.getLogger(__name__)
         self.bucket = bucket
         self.files_to_transform = files_to_transform
