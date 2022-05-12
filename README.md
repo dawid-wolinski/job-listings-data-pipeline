@@ -15,6 +15,7 @@ Once new file appears in the S3 Bucket, the data is transformed using Pandas lib
 
 ### Orchestration
 The pipeline is managed using Argo Workflows which is a Kubernetes orchestration enginge allowing to schedule containerised applications. For this purpose Docker images of both tools (Web Scraping and Data Transforming) were created. The Kubernetes deployment file specifies DAG (Directed Acyclic Graph) with two tasks - each responsible for pulling specific Docker image and running one of the tools within a container.
+
 ![image](https://user-images.githubusercontent.com/45266505/168034296-72e0a9c7-cbb4-46e1-80c0-8ef7325b8bdd.png)
 
 The DAG is scheduled to run everyday at 4:00 a.m. UTC. It starts with the Web Scraping task and once it is finished, the Data Transformation task is executed. 
