@@ -1,7 +1,7 @@
 ## Job Listings Salaries to Data Warehouse Pipeline
 
-This pipeline extracts data from Polish job listings website https://www.pracuj.pl/, transforms and loads it into the data warehouse. 
-It consists of two Python scripts: the web scraping tool and transformation tool.
+In this pipeline the data from the Polish job listings website https://www.pracuj.pl/ is extracted, transformed and loaded into the data warehouse. 
+It consists of two Python scripts: the web scraping tool and the transformation tool.
 
 ### Architecture
 ![diagram-pipeline](https://user-images.githubusercontent.com/45266505/165622680-93a170a0-90ba-4d4b-9748-fb5248a10b4f.png)
