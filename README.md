@@ -2,7 +2,7 @@ About
 ===
 
 In this pipeline the data from the Polish job listings website https://www.pracuj.pl/ is extracted, transformed and loaded into data warehouse. 
-It consists of two Python scripts: the web scraping tool and the transformation tool.
+It consists of two Python scripts: the web scraping tool and the transforming tool.
 
 ## Architecture
 ![diagram-pipeline](https://user-images.githubusercontent.com/45266505/165622680-93a170a0-90ba-4d4b-9748-fb5248a10b4f.png)
